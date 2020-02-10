@@ -10,12 +10,14 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
+# print(os.path.dirname(os.path.realpath(__file__)))
+
 patchId = input("YYYY-MMM of patches or leave blank for current month ("+datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')+")? ")
-outputPath = input("Output Path: Leave blank for current dir. ("+os.getcwd()+"/output)")
+outputPath = input("Output Path: Leave blank for current dir. ("+os.path.dirname(os.path.realpath(__file__))+"/output)")
 if patchId == '':
     patchId = datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')
 if outputPath == '':
-    outputPath = os.getcwd()+"/output"
+    outputPath = os.path.dirname(os.path.realpath(__file__))+"/output"
 print(str(datetime.now())+' :: Looking up '+patchId)
 url = "https://api.msrc.microsoft.com/cvrf/"+patchId
 
