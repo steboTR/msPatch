@@ -4,16 +4,18 @@ import pandas as pd
 from datetime import datetime, timedelta
 import time
 from pandas.io.json import json_normalize
+import os
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 patchId = input("YYYY-MMM of patches or leave blank for current month ("+datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')+")? ")
-
-if patchId is '':
+outputPath = input("Output Path: Leave blank for current dir. ("+os.getcwd()+"/output)")
+if patchId == '':
     patchId = datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')
-
+if outputPath == '':
+    outputPath = os.getcwd()+"/output"
 print(str(datetime.now())+' :: Looking up '+patchId)
 url = "https://api.msrc.microsoft.com/cvrf/"+patchId
 
@@ -139,7 +141,7 @@ print(str(datetime.now())+' :: Done')
 print(str(datetime.now())+' :: Writing to Excel')
 
 startPosition = 1
-writer = pd.ExcelWriter("/Users/stebo/Desktop/scriptOutput/msPatch_"+patchId.replace("-","_")+".xlsx", engine='xlsxwriter')
+writer = pd.ExcelWriter(outputPath+"/msPatch_"+patchId.replace("-","_")+".xlsx", engine='xlsxwriter')
 workbook=writer.book
 # worksheet = workbook.add_worksheet('Summary')
 cellFormatTitle = workbook.add_format({'font_name': 'Calibri', 'font_size': 16, 'bold':True, 'font_color': 'black', 'align': 'left'})
