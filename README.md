@@ -10,5 +10,9 @@ It applies the CTI filter on it for RCE and Exploitability of more likely or exp
 3. pandas
 4. datetime
 5. time
-6. xlswriter
+6. os
+7. argparse
+8. configparser
 
+OPTIONS:
+"-i" allows for the program to be run interactively.

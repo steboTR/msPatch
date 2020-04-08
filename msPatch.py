@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 import time
 from pandas.io.json import json_normalize
 import os
+import argparse
+import configparser
+from sys import platform
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -12,21 +15,47 @@ pd.set_option('display.width', 1000)
 
 # print(os.path.dirname(os.path.realpath(__file__)))
 
-patchId = input("YYYY-MMM of patches or leave blank for current month ("+datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')+")? ")
-outputPath = input("Output Path: Leave blank for current dir. ("+os.path.dirname(os.path.realpath(__file__))+"/output)")
-if patchId == '':
+def read_conf():
+    config = configparser.ConfigParser(allow_no_value=True)
+    config.read('./msPatch.conf')
+
+    cfg = {}
+
+    #global options
+    cfg['msAPIkey'] = config.get('global','msAPIkey')
+    cfg['msAPIurl'] = config.get('global','msAPIurl')
+    cfg['email'] = config.get('global','recipientEmail')
+
+    return cfg
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--interactive', action='store_true', help='Starts msPatch in interactive mode.')
+
+args = parser.parse_args()
+INTERACTIVE = args.interactive
+
+if INTERACTIVE:
+    patchId = input("YYYY-MMM of patches or leave blank for current month ("+datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')+")? ")
+    outputPath = input("Output Path: Leave blank for current dir. ("+os.path.dirname(os.path.realpath(__file__))+"/output)")
+    if patchId == '':
+        patchId = datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')
+    if outputPath == '':
+        outputPath = os.path.dirname(os.path.realpath(__file__))+"/output"
+    print(str(datetime.now())+' :: Looking up '+patchId)
+else:
     patchId = datetime.now().strftime('%Y')+"-"+datetime.now().strftime('%h')
-if outputPath == '':
     outputPath = os.path.dirname(os.path.realpath(__file__))+"/output"
-print(str(datetime.now())+' :: Looking up '+patchId)
-url = "https://api.msrc.microsoft.com/cvrf/"+patchId
+
+cfg = read_conf()
+
+url = cfg['msAPIurl']+patchId
 
 querystring = {"api-version":"latest"}
 
 payload = ""
 headers = {
     'Accept': "application/json",
-    'api-key': "f5510b16805d4121956e9fcfbd996a14",
+    'api-key': cfg['msAPIkey'],
     'User-Agent': "steboAPI",
     'Host': "api.msrc.microsoft.com",
     'accept-encoding': "gzip, deflate",
@@ -34,7 +63,17 @@ headers = {
 
 response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
 
+startTime = time.time()
+
 while "200" not in str(response):
+    elapsedtime = time.time() - startTime
+
+    if elapsedtime > 3600:
+        #send report on linux
+        if platform == "linux":
+            os.system("echo '' | mutt -s 'MSPatch :: SCRIPT RUNNING; NO RESULTS"+cfg['email'])
+        print("Email sent, still no results")
+
     print(str(datetime.now())+' :: No Report Found. Waiting 5 min.', end='\r')
     time.sleep(300)
     response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
@@ -192,15 +231,20 @@ ProductTreeBranchOutput.to_excel(writer,"productTreeBranch", index=False)
 # worksheet.conditional_format('A1:C'+str(startPosition), {'type':'blanks', 'format': formatEmpty})
 writer.close()
 
-import subprocess
 
-applescript = """
-display dialog "MS PATCH DONE" ¬
-with title "This is a pop-up window" ¬
-with icon caution ¬
-buttons {"OK"}
-"""
+if INTERACTIVE:
+    import subprocess
 
-subprocess.call("osascript -e '{}'".format(applescript), shell=True)
+    if platform =='darwin':
+        applescript = """
+        display dialog "MS PATCH DONE" ¬
+        with title "This is a pop-up window" ¬
+        with icon caution ¬
+        buttons {"OK"}
+        """
 
-print(str(datetime.now())+' :: Done')
+        subprocess.call("osascript -e '{}'".format(applescript), shell=True)
+
+        print(str(datetime.now())+' :: Done')
+    else:
+        print("Done")
