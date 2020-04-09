@@ -248,3 +248,7 @@ if INTERACTIVE:
         print(str(datetime.now())+' :: Done')
     else:
         print("Done")
+
+#send report on linux
+if platform == "linux":
+    os.system("echo '' | mutt -s 'MSPatch :: PATCH TUESDAY REPORT DONE' "+cfg['email']+" -a "+outputPath+"/msPatch_"+patchId.replace("-","_")+".xlsx")
