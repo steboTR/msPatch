@@ -68,14 +68,14 @@ startTime = time.time()
 while "200" not in str(response):
     elapsedtime = time.time() - startTime
 
-    if elapsedtime > 9:
+    if elapsedtime > 3600:
         #send report on linux
         if platform == "linux":
             os.system("echo '' | mutt -s 'MSPatch :: SCRIPT RUNNING; NO RESULTS' "+cfg['email'])
         print("Email sent, still no results")
 
     print(str(datetime.now())+' :: No Report Found. Waiting 5 min.', end='\r')
-    time.sleep(3)
+    time.sleep(300)
     response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
 
 print(str(datetime.now())+' :: Report Found')
