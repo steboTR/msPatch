@@ -71,7 +71,7 @@ while "200" not in str(response):
     if elapsedtime > 3600:
         #send report on linux
         if platform == "linux":
-            os.system("echo '' | mutt -s 'MSPatch :: SCRIPT RUNNING; NO RESULTS"+cfg['email'])
+            os.system("echo '' | mutt -s 'MSPatch :: SCRIPT RUNNING; NO RESULTS'"+cfg['email'])
         print("Email sent, still no results")
 
     print(str(datetime.now())+' :: No Report Found. Waiting 5 min.', end='\r')
