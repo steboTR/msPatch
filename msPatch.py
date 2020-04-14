@@ -15,6 +15,9 @@ pd.set_option('display.width', 1000)
 
 # print(os.path.dirname(os.path.realpath(__file__)))
 
+if platform == "linux":
+    os.system("echo '' | mutt -s 'MSPatch :: SCRIPT STARTING' steven.bowman@thomsonreuters.com")
+
 def read_conf():
     config = configparser.ConfigParser(allow_no_value=True)
     config.read('./msPatch.conf')
