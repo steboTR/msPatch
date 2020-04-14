@@ -73,6 +73,7 @@ while "200" not in str(response):
         if platform == "linux":
             os.system("echo '' | mutt -s 'MSPatch :: SCRIPT RUNNING; NO RESULTS' "+cfg['email'])
         print("Email sent, still no results")
+        startTime = time.time()
 
     print(str(datetime.now())+' :: No Report Found. Waiting 5 min.', end='\r')
     time.sleep(300)
