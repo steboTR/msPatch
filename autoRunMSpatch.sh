@@ -10,4 +10,4 @@ if [ $(date '+%a') = "Tue" ]; then
   cd "$myvar"
 else
    echo "Not Tuesday"
-   exit 1;
+   exit
