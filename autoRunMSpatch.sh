@@ -1,5 +1,5 @@
 #! /bin/bash
-if [ $(date '+%a') = "Tue" ]; then
+if [ $(date '+%a') -eq "Tue" ]
   export https_proxy=http://webproxy.f.corp.services:80
   export http_proxy=http://webproxy.f.corp.services:80
   source /data/scripts/asr/bin/activate
@@ -11,3 +11,4 @@ if [ $(date '+%a') = "Tue" ]; then
 else
    echo "Not Tuesday"
    exit
+fi
