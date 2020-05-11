@@ -1,5 +1,5 @@
 #! /bin/bash
-if [ $(date '+%a') -eq "Tue" ]
+if [ $(date '+%a') == "Tue" ]
 then
   export https_proxy=http://webproxy.f.corp.services:80
   export http_proxy=http://webproxy.f.corp.services:80
